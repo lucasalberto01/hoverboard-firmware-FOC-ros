@@ -5,6 +5,7 @@
 #include "defines.h"
 #include "setup.h"
 #include "config.h"
+#include "util.h"
 
 #define NUNCHUK_I2C_ADDRESS 0xA4
 
@@ -15,6 +16,7 @@ uint8_t  pwm_count = 0;
 uint32_t timeoutCntGen = TIMEOUT;
 uint8_t  timeoutFlgGen = 0;
 uint8_t  nunchuk_data[6] = {0};
+Odometer odom;
 
 uint8_t i2cBuffer[2];
 nunchuk_state nunchukState = NUNCHUK_CONNECTING;
@@ -342,4 +344,43 @@ nunchuk_state Nunchuk_Read(void) {
   //setScopeChannel(1, (int)nunchuk_data[1]);
   //setScopeChannel(2, (int)nunchuk_data[5] & 1);
   //setScopeChannel(3, ((int)nunchuk_data[5] >> 1) & 1);
+}
+
+void Motor_Pos() {
+    static int motAngleLeftLast = 0;
+    static int motAngleRightLast = 0;
+    static int cycleDegsL = 0;  // wheel encoder roll over count in deg
+    static int cycleDegsR = 0;  // wheel encoder roll over count in deg
+    int diffL = 0;
+    int diffR = 0;
+    static int cnt = 0;
+
+    // Save initial position
+    if (cnt == 0) {
+        motAngleLeftLast = odom.motAngleLeft;
+        motAngleRightLast = odom.motAngleRight;
+    }
+
+    // Calculate position Left
+    diffL = odom.motAngleLeft - motAngleLeftLast;
+    if (diffL < -180) {
+        cycleDegsL = cycleDegsL + 360;
+    } else if (diffL > 180) {
+        cycleDegsL = cycleDegsL - 360;
+    }
+    odom.MotorPosLeft = odom.motAngleLeft + cycleDegsL;
+
+    // Calculate position Right
+    diffR = odom.motAngleRight - motAngleRightLast;
+    if (diffR < -180) {
+        cycleDegsR = cycleDegsR + 360;
+    } else if (diffR > 180) {
+        cycleDegsR = cycleDegsR - 360;
+    }
+    odom.MotorPosRight = odom.motAngleRight + cycleDegsR;
+
+    // Save last position
+    motAngleLeftLast = odom.motAngleLeft;
+    motAngleRightLast = odom.motAngleRight;
+    cnt++;
 }

@@ -193,6 +193,10 @@
 #define DEFAULT_STEER_COEFFICIENT   8192  // Defualt for STEER_COEFFICIENT 0.5f [-] higher value == stronger. [0, 65535] = [-2.0 - 2.0]. In this case  8192 = 0.5 * 2^14. If you do not want any steering, set it to 0.
 // ######################### END OF DEFAULT SETTINGS ##########################
 
+// ############################### ODOMTOMETRY #########################
+#define TICKS_PER_REVOLUTION      2000    // [-] Number of ticks per revolution of the wheel encoder
+
+// ############################### END OF ODOMTOMETRY #########################
 
 
 // ############################## INPUT FORMAT ############################

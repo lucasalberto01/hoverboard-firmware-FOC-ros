@@ -113,20 +113,24 @@ int16_t dc_curr;                 // global variable for Total DC Link current
 int16_t cmdL;                    // global variable for Left Command 
 int16_t cmdR;                    // global variable for Right Command 
 
+extern Odometer odom;
+
 //------------------------------------------------------------------------
 // Local variables
 //------------------------------------------------------------------------
 #if defined(FEEDBACK_SERIAL_USART2) || defined(FEEDBACK_SERIAL_USART3)
 typedef struct{
-  uint16_t  start;
-  int16_t   cmd1;
-  int16_t   cmd2;
-  int16_t   speedR_meas;
-  int16_t   speedL_meas;
-  int16_t   batVoltage;
-  int16_t   boardTemp;
-  uint16_t  cmdLed;
-  uint16_t  checksum;
+  uint16_t start;
+  int16_t cmd1;
+  int16_t cmd2;
+  int16_t speedR_meas;
+  int16_t speedL_meas;
+  int16_t batVoltage;
+  int16_t boardTemp;
+  int16_t odom_L;
+  int16_t odom_R;
+  uint16_t cmdLed;
+  uint16_t checksum;
 } SerialFeedback;
 static SerialFeedback Feedback;
 #endif
@@ -516,12 +520,13 @@ int main(void) {
         Feedback.speedL_meas	  = (int16_t)rtY_Left.n_mot;
         Feedback.batVoltage	    = (int16_t)batVoltageCalib;
         Feedback.boardTemp	    = (int16_t)board_temp_deg_c;
+        Feedback.odom_L         = (odom.MotorPosLeft * TICKS_PER_REVOLUTION) / 5400; // scale to 2000 units per rotation   sf = .37 =2000/(360 deg*15pole pairs= 5400 elec deg)
+        Feedback.odom_R         = (odom.MotorPosRight * TICKS_PER_REVOLUTION) / 5400; //minimum step is 60 deg elec phase angle, or 4 deg mechanical angle
 
         #if defined(FEEDBACK_SERIAL_USART2)
           if(__HAL_DMA_GET_COUNTER(huart2.hdmatx) == 0) {
             Feedback.cmdLed     = (uint16_t)sideboard_leds_L;
-            Feedback.checksum   = (uint16_t)(Feedback.start ^ Feedback.cmd1 ^ Feedback.cmd2 ^ Feedback.speedR_meas ^ Feedback.speedL_meas 
-                                           ^ Feedback.batVoltage ^ Feedback.boardTemp ^ Feedback.cmdLed);
+            Feedback.checksum   = (uint16_t)(Feedback.start ^ Feedback.cmd1 ^ Feedback.cmd2 ^ Feedback.speedR_meas ^ Feedback.speedL_meas ^ Feedback.batVoltage ^ Feedback.boardTemp ^ Feedback.cmdLed);
 
             HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&Feedback, sizeof(Feedback));
           }
