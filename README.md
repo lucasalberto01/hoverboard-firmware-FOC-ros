@@ -1,6 +1,9 @@
 # MIDDLEWARE WITH ROS
 > https://github.com/lucasalberto01/hoverboard-firmware-hack-FOC-middleware + https://github.com/joshnewans/ros_arduino_bridge
 
+# Architeture
+![untitled (1)](https://github.com/lucasalberto01/hoverboard-firmware-FOC-ros/assets/29151352/d75d1f27-a695-4526-9578-256d2b022d08)
+
 
 # hoverboard-firmware-hack-FOC
 [![Build status](https://github.com/EFeru/hoverboard-firmware-hack-FOC/actions/workflows/build_on_commit.yml/badge.svg)](https://github.com/EFeru/hoverboard-firmware-hack-FOC/actions/workflows/build_on_commit.yml)
