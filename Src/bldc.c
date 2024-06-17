@@ -33,6 +33,8 @@
 #include "BLDC_controller.h"           /* Model's header file */
 #include "rtwtypes.h"
 
+extern Odometer odom;
+
 extern RT_MODEL *const rtM_Left;
 extern RT_MODEL *const rtM_Right;
 
@@ -199,6 +201,7 @@ void DMA1_Channel1_IRQHandler(void) {
   // errCodeLeft  = rtY_Left.z_errCode;
   // motSpeedLeft = rtY_Left.n_mot;
   // motAngleLeft = rtY_Left.a_elecAngle;
+    odom.motAngleLeft = rtY_Left.a_elecAngle;
 
     /* Apply commands */
     LEFT_TIM->LEFT_TIM_U    = (uint16_t)CLAMP(ul + pwm_res / 2, pwm_margin, pwm_res-pwm_margin);
@@ -237,6 +240,7 @@ void DMA1_Channel1_IRQHandler(void) {
  // errCodeRight  = rtY_Right.z_errCode;
  // motSpeedRight = rtY_Right.n_mot;
  // motAngleRight = rtY_Right.a_elecAngle;
+    odom.motAngleRight = rtY_Right.a_elecAngle;
 
     /* Apply commands */
     RIGHT_TIM->RIGHT_TIM_U  = (uint16_t)CLAMP(ur + pwm_res / 2, pwm_margin, pwm_res-pwm_margin);
@@ -248,5 +252,7 @@ void DMA1_Channel1_IRQHandler(void) {
   OverrunFlag = false;
  
  // ###############################################################################
+
+  Motor_Pos();  // Calculate motor electrical positions relative to startup positions
 
 }

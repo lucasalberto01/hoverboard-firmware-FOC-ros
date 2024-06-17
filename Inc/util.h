@@ -127,5 +127,14 @@ typedef struct {
 } MultipleTap;
 void multipleTapDet(int16_t u, uint32_t timeNow, MultipleTap *x);
 
+// Odomtoeter Functions
+typedef struct {
+  int16_t motAngleLeft;
+  int16_t motAngleRight;
+  int16_t MotorPosLeft;
+  int16_t MotorPosRight;
+} Odometer;
+void Motor_Pos();
+
 #endif
 
